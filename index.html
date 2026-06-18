@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Croissant+One&family=Outfit:wght@100..900&display=swap" rel="stylesheet"> 
+    <title>Cadastro</title>
+</head>
+<body>
+    <div id="mensagem-sucesso" class="mensagem-sucesso"></div>
+    <div class="container">
+        <h1>⋅─Cadastro de Usuário୨ৎ─⋆</h1>
+        <form action="#" method="post">
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <div style="width: 100%;">
+                    <input type="text" id="nome" name="nome" class="input-field">
+                    <div id="erro-nome" class="erro-msg"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="endereco">Endereço:</label>
+                <div style="width: 100%;">
+                    <input type="text" id="endereco" name="endereco" class="input-field">
+                    <div id="erro-endereco" class="erro-msg"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <div style="width: 100%;">
+                    <input type="email" id="email" name="email" class="input-field">
+                    <div id="erro-email" class="erro-msg"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                <div style="width: 100%;">
+                    <input type="password" id="senha" name="senha" class="input-field">
+                    <div id="erro-senha" class="erro-msg"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="repita-senha">Repita a senha:</label>
+                <div style="width: 100%;">
+                    <input type="password" id="repita-senha" name="repita-senha" class="input-field">
+                    <div id="erro-repita-senha" class="erro-msg"></div>
+                </div>
+            </div>
+
+            <button type="submit">Cadastrar</button>
+
+        </form>
+    </div>
+
+    <script>
+        function validarCampo(valor, tipo) {
+            switch(tipo) {
+                case 'nome':
+                    if (valor.length < 3) {
+                        return { valido: false, cor: '#ff0000', mensagem: 'Mínimo 3 caracteres' };
+                    }
+                    return { valido: true, cor: '#00cc00', mensagem: 'Válido' };
+                
+                case 'endereco':
+                    if (valor.length < 6) {
+                        return { valido: false, cor: '#ff0000', mensagem: 'Mínimo 6 caracteres' };
+                    }
+                    return { valido: true, cor: '#00cc00', mensagem: 'Válido' };
+                
+                case 'email':
+                    const regexEmail = /^[^\s@]+@[^\s@]+\.com$/;
+                    if (!regexEmail.test(valor)) {
+                        return { valido: false, cor: '#ff0000', mensagem: 'Email inválido (ex: nome@email.com)' };
+                    }
+                    return { valido: true, cor: '#00cc00', mensagem: 'Válido' };
+                
+                case 'senha':
+                    if (valor.length < 3) {
+                        return { valido: false, cor: '#ff0000', mensagem: 'Mínimo 3 caracteres' };
+                    } else if (valor.length < 6) {
+                        return { valido: false, cor: '#ffaa00', mensagem: 'Mínimo 6 caracteres' };
+                    } else if (valor.length < 10) {
+                        return { valido: false, cor: '#ffff00', mensagem: 'Recomendado 10 caracteres' };
+                    } else {
+                        return { valido: true, cor: '#00cc00', mensagem: 'Senha forte' };
+                    }
+                
+                case 'repita-senha':
+                    const senhaOriginal = document.getElementById('senha').value;
+                    if (valor !== senhaOriginal) {
+                        return { valido: false, cor: '#ff0000', mensagem: 'Senhas não conferem' };
+                    }
+                    if (valor.length === 0) {
+                        return { valido: false, cor: '#ff0000', mensagem: 'Digite a senha novamente' };
+                    }
+                    return { valido: true, cor: '#00cc00', mensagem: '' };
+                
+                default:
+                    return { valido: false, cor: '#ff0000', mensagem: 'Campo inválido' };
+            }
+        }
+
+        function validarTodos() {
+            const campos = ['nome', 'endereco', 'email', 'senha', 'repita-senha'];
+            let tudoValido = true;
+
+            campos.forEach(campoId => {
+                const input = document.getElementById(campoId);
+                const erro = document.getElementById(`erro-${campoId}`);
+                const validacao = validarCampo(input.value, campoId);
+
+                if (!validacao.valido) {
+                    tudoValido = false;
+                }
+
+                erro.innerHTML = validacao.mensagem;
+                erro.style.color = validacao.cor;
+                input.style.borderColor = validacao.cor;
+                input.style.borderWidth = '2px';
+            });
+
+            return tudoValido;
+        }
+
+        const formulario = document.querySelector('form');
+        const mensagemSucesso = document.getElementById('mensagem-sucesso');
+        
+        formulario.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validarTodos()) {
+                mensagemSucesso.innerHTML = '✓ Cadastro realizado com sucesso!';
+                mensagemSucesso.style.display = 'block';
+                
+                formulario.reset();
+
+                const erros = document.querySelectorAll('.erro-msg');
+                erros.forEach(erro => erro.innerHTML = '');
+                
+                const inputs = document.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.style.borderColor = '';
+                    input.style.borderWidth = '';
+                });
+                
+                // Remove a mensagem após 5 segundos
+                setTimeout(() => {
+                    mensagemSucesso.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+
+</body>
+</html>
